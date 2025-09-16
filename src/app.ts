@@ -11,12 +11,12 @@ app.get("/", (req, res) => {
 
 app.use(express.json())
 
+app.use("/auth", authRouter)
+
 app.use((err, req, res, next) => {
-  console.error(err.stack)
+  // console.error("message", err.message, "stack", err.stack)
   res.status(500).json({ stack: err.stack, message: err.message })
 })
-
-app.use("/auth", authRouter)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
