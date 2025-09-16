@@ -42,6 +42,7 @@
     "esModuleInterop": true,
     "allowJs": true,
     // "resolveJsonModule": true
+    "allowImportingTsExtensions": true
   },
   "exclude": ["node_modules", "dist"]
 }
