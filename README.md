@@ -1,7 +1,3 @@
-Here’s a README for your JWT Express TypeScript project:
-
----
-
 # JWT Express API
 
 A simple Express.js API in TypeScript for signing and verifying JWT tokens. Includes environment variable support and error handling.
