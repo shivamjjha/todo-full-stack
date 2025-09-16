@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 const router = express.Router()
 
 const EXPIRES_HOUR = 1
+
 router.post("/sign", (req, res) => {
   console.log("params", req.body, req.params)
   jwt.sign(
@@ -26,6 +27,15 @@ router.post("/sign", (req, res) => {
   )
 })
 
-// router.post("/verify")
+router.post("/verify", (req, res) => {
+  jwt.verify(req.body.data, process.env.JWT_SECRET!, function (err) {
+    if (err) {
+      res.status(401).json({ ok: false })
+      return
+    }
+
+    res.status(200).json({ ok: true })
+  })
+})
 
 export { router as authRouter }
