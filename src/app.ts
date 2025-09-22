@@ -15,7 +15,9 @@ app.use("/auth", authRouter)
 
 app.use((err, req, res, next) => {
   // console.error("message", err.message, "stack", err.stack)
-  res.status(500).json({ stack: err.stack, message: err.message })
+  res
+    .status(500)
+    .json({ stack: err.stack, message: err.message, ...(err ?? {}) })
 })
 
 app.listen(port, () => {
