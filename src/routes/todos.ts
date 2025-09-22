@@ -63,4 +63,17 @@ router.put("/:id", async (req, res) => {
   }
 })
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const todoId = req.params.id
+    if (!todoId) throw "No todo id provided"
+
+    await db.delete(todosTable).where(eq(todosTable.id, +todoId))
+
+    return res.status(200).json({ ok: true })
+  } catch (error) {
+    return res.status(500).json({ ok: false, error })
+  }
+})
+
 export { router as todosRouter }
