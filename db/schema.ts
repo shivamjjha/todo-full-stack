@@ -14,7 +14,7 @@ export const todosTable = sqliteTable("todos_table", {
   id: int().primaryKey({ autoIncrement: true }),
   userId: int()
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, { onDelete: "cascade" }),
   title: text().notNull(),
   description: text(),
   status: text().default("incomplete"), // incomplete, in-progress, complete
