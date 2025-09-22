@@ -1,5 +1,11 @@
+import { randomBytes } from "crypto"
 import express from "express"
 import jwt from "jsonwebtoken"
+import { db } from "../../db/index.ts"
+import { usersTable } from "../../db/schema.ts"
+import z from "zod"
+import { createInsertSchema } from "drizzle-zod"
+import argon2 from "argon2"
 
 const router = express.Router()
 
@@ -28,7 +34,7 @@ router.post("/sign", (req, res) => {
 })
 
 router.post("/verify", (req, res) => {
-  jwt.verify(req.body.data, process.env.JWT_SECRET!, function (err) {
+  jwt.verify(req.body.data, process.env.JWT_SECRET!, function (err: unknown) {
     if (err) {
       res.status(401).json({ ok: false })
       return
@@ -36,6 +42,46 @@ router.post("/verify", (req, res) => {
 
     res.status(200).json({ ok: true })
   })
+})
+
+const userSchema = createInsertSchema(usersTable)
+
+router.post("/signup", (req, res) => {
+  const rawData = {
+    username: req.body.username,
+    password: req.body.password,
+    email: req.body.email,
+    name: req.body.name,
+    slug: randomBytes(16).toString("hex"),
+  }
+  const validatedData = userSchema.safeParse(rawData)
+  if (!validatedData.success) {
+    const { slug, ...withoutSlug } = rawData
+    throw {
+      errors: z.treeifyError(validatedData.error).properties,
+      initialData: withoutSlug,
+    }
+  }
+
+  argon2
+    .hash(validatedData.data.password)
+    .then((hashedPassword) => {
+      rawData.password = hashedPassword
+      console.log("inserting user", rawData)
+
+      db.insert(usersTable)
+        .values(rawData)
+        .then(() => {
+          res.status(200).json({ ok: true })
+        })
+        .catch((e) => {
+          res.status(500).json({ ok: false, error: e })
+        })
+    })
+    .catch((e) => {
+      res.status(500).json({ ok: false, error: e })
+      return
+    })
 })
 
 export { router as authRouter }
