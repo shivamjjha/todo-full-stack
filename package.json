@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node --watch src/app.ts"
+    "dev": "node --watch src/app.ts",
+    "drizzle:push": "drizzle-kit push --config './db/drizzle.config.ts'",
+    "drizzle:studio": "drizzle-kit studio --config './db/drizzle.config.ts'"
   },
   "keywords": [],
   "author": "Shivam Jha",
