@@ -6,6 +6,7 @@ import { usersTable } from "../../db/schema.ts"
 import z from "zod"
 import { createInsertSchema } from "drizzle-zod"
 import argon2 from "argon2"
+import { eq, or } from "drizzle-orm"
 
 const router = express.Router()
 
@@ -67,7 +68,6 @@ router.post("/signup", (req, res) => {
     .hash(validatedData.data.password)
     .then((hashedPassword) => {
       rawData.password = hashedPassword
-      console.log("inserting user", rawData)
 
       db.insert(usersTable)
         .values(rawData)
@@ -82,6 +82,57 @@ router.post("/signup", (req, res) => {
       res.status(500).json({ ok: false, error: e })
       return
     })
+})
+
+router.post("/login", async (req, res) => {
+  const userNameOrEmail = req.body.userNameOrEmail
+  const passwordFromReq = req.body.password
+
+  if (!(userNameOrEmail && passwordFromReq)) {
+    return res.status(400).json({ ok: false, error: "Missing credentials" })
+  }
+
+  try {
+    const users = await db
+      .select({
+        id: usersTable.id,
+        name: usersTable.name,
+        slug: usersTable.slug,
+        username: usersTable.username,
+        email: usersTable.email,
+        password: usersTable.password,
+      })
+      .from(usersTable)
+      .where(
+        or(
+          eq(usersTable.username, userNameOrEmail),
+          eq(usersTable.email, userNameOrEmail),
+        ),
+      )
+
+    const user = users[0]
+    if (!users.length || !user) {
+      return res
+        .status(401)
+        .json({ ok: false, error: "Invalid username or password" })
+    }
+
+    const passwordHash = user.password
+    const isVerified = await argon2.verify(passwordHash, passwordFromReq)
+
+    if (!isVerified) {
+      return res
+        .status(401)
+        .json({ ok: false, error: "Invalid username or password" })
+    }
+
+    if (isVerified) {
+      const { password, ...userWithoutPassword } = user
+      return res.status(200).json({ ok: true, userWithoutPassword })
+    }
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e })
+  }
 })
 
 export { router as authRouter }
