@@ -126,10 +126,13 @@ router.post("/login", async (req, res) => {
         .json({ ok: false, error: "Invalid username or password" })
     }
 
-    if (isVerified) {
-      const { password, ...userWithoutPassword } = user
-      return res.status(200).json({ ok: true, userWithoutPassword })
-    }
+    const { password, ...userWithoutPassword } = user
+
+    const jwtToken = jwt.sign(userWithoutPassword, process.env.JWT_SECRET!)
+    return res
+      .status(200)
+      .json({ ok: true, user: { ...userWithoutPassword, token: jwtToken } })
+
   } catch (e) {
     res.status(500).json({ ok: false, error: e })
   }
