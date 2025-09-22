@@ -3,6 +3,7 @@ dotenv.config()
 import express from "express"
 import { authRouter } from "./routes/auth.ts"
 import { todosRouter } from "./routes/todos.ts"
+import { authMiddleware } from "./middlewares/auth.ts"
 const app = express()
 const port = 5000
 
@@ -13,7 +14,7 @@ app.get("/", (req, res) => {
 app.use(express.json())
 
 app.use("/auth", authRouter)
-app.use("/todos", todosRouter)
+app.use("/todos", authMiddleware, todosRouter)
 
 app.use((err, req, res, next) => {
   // console.error("message", err.message, "stack", err.stack)
