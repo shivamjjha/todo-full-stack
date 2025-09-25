@@ -16,7 +16,7 @@ export async function createTodoList() {
   // console.log("allTodos", res)
   res.forEach(function (todo) {
     const li = document.createElement("li")
-    li.setAttribute("data-id", todo.id)
+    // li.setAttribute("data-id", todo.id)
     li.style.listStyleType = "none"
 
     const checkbox = document.createElement("input")
@@ -54,7 +54,15 @@ export async function createTodoList() {
     const deleteButton = document.createElement("button")
     deleteButton.textContent = "Delete"
     deleteButton.addEventListener("click", async () => {
-      // TODO delete todo item
+      sendRequest(`/todos/${todo.id}`, "DELETE")
+        .catch((err) => {
+          console.error(err)
+          alert("Something went wrong")
+        })
+        .finally(() => {
+          // refresh the todo list
+          createTodoList()
+        })
     })
     li.append(checkbox, span, deleteButton)
 
@@ -74,7 +82,16 @@ export async function hookTodoForm() {
     }
     data.userId = userId
     console.log("form data", data)
-    const res = await sendRequest(`/todos/`, "POST", data)
-    console.log("add todo response", res)
+    sendRequest(`/todos/`, "POST", data)
+      .catch((err) => {
+        console.error(err)
+        alert("Something went wrong")
+      })
+      .finally(() => {
+        form.reset()
+        form.children[0].focus()
+        createTodoList()
+      })
+    // console.log("add todo response", res)
   })
 }
