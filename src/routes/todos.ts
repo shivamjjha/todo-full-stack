@@ -1,5 +1,6 @@
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod"
 import express from "express"
+import jwt from "jsonwebtoken"
 import { todosTable } from "../../db/schema.ts"
 import z from "zod"
 import { db } from "../../db/index.ts"
@@ -73,6 +74,35 @@ router.delete("/:id", async (req, res) => {
     return res.status(200).json({ ok: true })
   } catch (error) {
     return res.status(500).json({ ok: false, error })
+  }
+})
+
+router.get("/", async (req, res) => {
+  try {
+    // send all todos for a user
+    const authorization = req.headers.authorization
+    const token = authorization?.split(" ")[1]
+    if (!token) {
+      return res.status(401).json({ ok: false, error: "Invalid credentials" })
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+    const userId = +(decoded as { id: number }).id
+    if (!userId) {
+      return res.status(400).json({ ok: false, error: "No user id provided" })
+    }
+    const todos = await db
+      .select({
+        id: todosTable.id,
+        title: todosTable.title,
+        description: todosTable.description,
+        status: todosTable.status,
+      })
+      .from(todosTable)
+      .where(eq(todosTable.userId, userId))
+
+    return res.status(200).json(todos)
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e })
   }
 })
 
