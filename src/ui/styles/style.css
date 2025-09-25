@@ -1,0 +1,4 @@
+#todo-list li input[type=checkbox]:checked + span {
+  text-decoration: line-through;
+  color: #888;
+}
