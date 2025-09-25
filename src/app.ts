@@ -1,6 +1,7 @@
 import dotenv from "dotenv"
 dotenv.config()
 import express from "express"
+import compression from "compression"
 import { fileURLToPath } from "url"
 import { authRouter } from "./routes/auth.ts"
 import { todosRouter } from "./routes/todos.ts"
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!")
 })
 
+app.use(compression())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 console.log(path.join(__dirname, "ui"))
