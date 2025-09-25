@@ -69,7 +69,7 @@ A comprehensive full-stack Todo application built with Node.js, Express, TypeScr
    ```bash
    npm start
    ```
-6. Open [http://localhost:5000](http://localhost:5000) in your browser.
+6. Open [http://localhost:5000/index.html](http://localhost:5000/index.html) in your browser.
 
 ## API Endpoints
 
