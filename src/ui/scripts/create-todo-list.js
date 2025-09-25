@@ -1,12 +1,13 @@
 import { sendRequest } from "./request.js"
 
-export async function createTodoList(todos) {
+export async function createTodoList() {
   const todoContainer = document.querySelector("#todo-list")
   const userId = JSON.parse(localStorage.getItem("user")).id
   if (!userId) {
     throw new Error("User ID not found in local storage")
   }
   const res = await sendRequest(`/todos/`)
+  todoContainer.innerHTML = ""
   // if (!res.ok) {
   //   console.log(res)
   //   alert(res.error)
@@ -40,6 +41,10 @@ export async function createTodoList(todos) {
           console.error(err)
           checkbox.checked = !e.target.checked
           alert("Something went wrong")
+        })
+        .finally(() => {
+          // refresh the todo list
+          createTodoList()
         })
     })
 
