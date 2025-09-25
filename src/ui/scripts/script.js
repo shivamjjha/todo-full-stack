@@ -1,5 +1,6 @@
 import { checkLoggedIn } from "./check-logged-in.js"
 import { createTodoList, hookTodoForm } from "./create-todo-list.js"
+import { populateUserDetails } from "./user.js"
 
 if (!checkLoggedIn()) {
   console.log("Not logged in")
@@ -7,6 +8,7 @@ if (!checkLoggedIn()) {
   // return
 }
 
+populateUserDetails()
 createTodoList()
 hookTodoForm()
 
