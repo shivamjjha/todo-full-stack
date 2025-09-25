@@ -12,7 +12,7 @@ export async function createTodoList(todos) {
   //   alert(res.error)
   //   return
   // }
-  console.log("allTodos", res)
+  // console.log("allTodos", res)
   res.forEach(function (todo) {
     const li = document.createElement("li")
     li.setAttribute("data-id", todo.id)
@@ -21,6 +21,27 @@ export async function createTodoList(todos) {
     const checkbox = document.createElement("input")
     checkbox.type = "checkbox"
     checkbox.checked = todo.status === "complete"
+    checkbox.addEventListener("change", async (e) => {
+      const newStatus = e.target.checked ? "complete" : "incomplete"
+      // update status of todo item
+      sendRequest(`/todos/${todo.id}`, "PUT", {
+        status: newStatus,
+        title: todo.title,
+        description: todo.description,
+      })
+        .then((res) => {
+          console.log("update status response", res)
+          if (!res.ok) {
+            checkbox.checked = !e.target.checked
+            alert(res.error)
+          }
+        })
+        .catch((err) => {
+          console.error(err)
+          checkbox.checked = !e.target.checked
+          alert("Something went wrong")
+        })
+    })
 
     const span = document.createElement("span")
     span.textContent = todo.title

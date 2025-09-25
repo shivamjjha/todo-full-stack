@@ -17,9 +17,7 @@ export const todosTable = sqliteTable("todos_table", {
     .references(() => usersTable.id, { onDelete: "cascade" }),
   title: text().notNull(),
   description: text(),
-  status: text({ enum: ["incomplete", "in-progress", "complete"] }).default(
-    "incomplete",
-  ), // incomplete, in-progress, complete
+  status: text({ enum: ["incomplete", "complete"] }).default("incomplete"), // incomplete, in-progress, complete
 })
 
 // user -> todos (1 to many)
