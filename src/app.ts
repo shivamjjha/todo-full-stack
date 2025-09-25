@@ -15,6 +15,7 @@ app.get("/", (req, res) => {
 })
 
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 console.log(path.join(__dirname, "ui"))
 app.use(express.static(path.join(__dirname, "ui")))
 

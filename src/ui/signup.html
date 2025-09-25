@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+</head>
+<body>
+  <form method="post" action="/auth/signup" id="signup-form">
+    <input type="text" placeholder="Username" name="username" required />
+    <input type="password" placeholder="Password" name="password" required />
+    <input type="email" placeholder="Email" name="email" />
+    <input type="text" placeholder="Name" name="name" />
+
+    <button type="submit">Login</button>
+  </form>
+  Need to Log In? <a href="login.html">Log In</a>
+
+  <script>
+    const signUpForm = document.getElementById("signup-form")
+    signUpForm.addEventListener("submit", async (e) => {
+      e.preventDefault()
+      const formData = new FormData(signUpForm)
+      const data = Object.fromEntries(formData.entries())
+      console.log("data", data)
+      const res = await fetch("/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+      const resData = await res.json()
+      console.log("resData", resData)
+      if (resData.ok) {
+        // localStorage.setItem("token", resData.user.token)
+        alert("Signup successful! Please log in.")
+        window.location.href = "index.html"
+      } else {
+        alert("Error: " + resData.error)
+      }
+    })
+  </script>
+</body>
+</html>
