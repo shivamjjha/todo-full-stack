@@ -6,7 +6,15 @@
   <title>Todo</title>
 </head>
 <body>
+  <ul id="todo-list" style="padding-left:0;">
+  </ul>
+
+  <form id="add-todo" method="post">
+    <input type="text" name="title" placeholder="Title" required />
+    <input type="text" name="description" placeholder="Description" />
+    <button type="submit">Add Todo</button>
+  </form> 
   
-  <script type="module" src="./script.js" defer></script>
+  <script type="module" src="./scripts/script.js" defer></script>
 </body>
 </html>
